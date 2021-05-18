@@ -54,15 +54,16 @@ class SignUpTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message': '비밀번호는 8자 이상 입력해주세요'})
 
-    # def test_signup_post_fail_invalid_password(self):
-    #     data = {
-    #         'email' : 'test5@test.com',
-    #         'password' : '########',
-    #         'name' : 'tester5'
-    #     }
-    #     response = client.post('/user/signup', json.dumps(data), content_type='application/json')
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.json(), {'message': '특수문자는 @ ! ^ * 만 가능합니다'})
+    def test_signup_post_fail_invalid_email(self):
+        data = {
+            'email' : 'test7.com',
+            'password' : 'pw12341234',
+            'name' : 'tester7'
+        }
+        response = client.post('/user/signup', json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message': '잘못된 형식의 이메일입니다'})
+
 
 class SignInTest(TestCase):
     def setUp(self):

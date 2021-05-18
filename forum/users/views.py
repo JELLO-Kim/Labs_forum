@@ -1,10 +1,11 @@
-import json, jwt
+import json, jwt, re
 
 from django.views   import View
 from django.http    import JsonResponse
 
 from users.models   import User
 from my_settings    import SECRET_KEY, ALGORITHM
+from utils          import password_valid, email_valid
 
 class SignUpView(View):
     def post(self, request):
@@ -38,12 +39,14 @@ class SignUpView(View):
         if User.objects.filter(email=email).exists():
             return JsonResponse({'message' : '이미 사용중인 이메일입니다'}, status=400)
         
-        # password 형식 Validation
-        if len(password) < 8:
+        # password 길이 Validation
+        if not re.search(password_valid, password):
             return JsonResponse({'message' : '비밀번호는 8자 이상 입력해주세요'}, status=400)
-        if password in "#":
-            return JsonResponse({'message' : '특수문자는 @ ! ^ * 만 가능합니다'}, status=400)
-        
+
+        # email 형식 Validation
+        if not re.search(email_valid, email):
+            return JsonResponse({'message' : '잘못된 형식의 이메일입니다'}, status=400)
+
         user = User.objects.create(
                 email = email,
                 password = password,
