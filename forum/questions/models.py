@@ -2,14 +2,21 @@ from django.db import models
 
 from users.models import User
 
+class QuestionType(models.Model):
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'question_types'
+
 class Question(models.Model):
-    writter     = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    title       = models.CharField(max_length=150)
-    content     = models.TextField()
-    created_at  = models.DateTimeField(auto_now_add=True)
-    updated_at  = models.DateTimeField(auto_now=True)
-    deleted_at  = models.DateTimeField(null=True)
-    is_delete   = models.BooleanField(default=0)
+    writter         = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    question_type   = models.ForeignKey('QuestionType', on_delete=models.CASCADE, default=1)
+    title           = models.CharField(max_length=150)
+    content         = models.TextField()
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
+    deleted_at      = models.DateTimeField(null=True)
+    is_delete       = models.BooleanField(default=0)
 
     class Meta:
         db_table = 'questions'
