@@ -13,6 +13,7 @@ class Question(models.Model):
     question_type   = models.ForeignKey('QuestionType', on_delete=models.CASCADE, default=1)
     title           = models.CharField(max_length=150)
     content         = models.TextField()
+    user_like       = models.ManyToManyField('users.User', through='QuestionLike', related_name='user_like_question')
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
     deleted_at      = models.DateTimeField(null=True)
