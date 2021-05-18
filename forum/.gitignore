@@ -1,5 +1,5 @@
-
 my_settings.py
+.vscode
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,vim,linux,visualstudiocode,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,vim,linux,visualstudiocode,macos
