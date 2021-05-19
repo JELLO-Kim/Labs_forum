@@ -1,0 +1,32 @@
+version: "3"
+
+services: 
+  forum_app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: >
+      bash -c "./wait-for-it.sh db:3306 -t 15
+      && python manage.py makemigrations
+      && python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000"
+    volumes: 
+      - .:/usr/src/labs_forum
+    ports:
+      - "8000:8000"
+    depends_on: 
+      - forum_db
+
+  forum_db:
+    image: mysql:5.7
+    environment: 
+      MYSQL_DATABASE : 'labs_forum_db'
+      MYSQL_PASSWORD : 'password'
+      MYSQL_ROOT_PASSWORD : 'password'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./data:/docker-entrypoint-initdb.d
+    expose:
+      - "3306"
