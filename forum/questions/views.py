@@ -1,13 +1,12 @@
 import json
-from json.encoder import JSONEncoder
 
 from django.http            import JsonResponse
 from django.views           import View
 from django.db.models       import Count, Q
 
-from users.models   import User
-from questions.models import Question, Comment, QuestionLike, QuestionType
-from utils          import login_decorator
+from users.models       import User
+from questions.models   import Question, Comment, QuestionLike, QuestionType
+from utils              import login_decorator
 
 def check_question_validation(question_id):
     """
@@ -285,15 +284,16 @@ class BestQuestionView(View):
         if not Question.objects.filter(id=question_id).exists():
             return JsonResponse({'message' : '존재하지 않는 질문입니다'}, status=404)
         if Question.objects.get(id=question_id).is_delete == 1:
-            return JsonResponse({'message' : '삭제된 질문입니다'}, status=400)        
+            return JsonResponse({'message' : '삭제된 질문입니다'}, status=400)
+
         check_question = Question.objects.get(id=question_id)
         standard_month = check_question.created_at.month
+        questions = Question.objects.filter(created_at__month = standard_month).select_related('writter', 'question_type')
+        best_question_select = questions.annotate(like_num=Count('questionlike')).order_by('-like_num')[0]
 
-        question = Question.objects.filter(created_at__month = standard_month).select_related('writter', 'question_type')
-        best_question_select = question.annotate(like_num=Count('questionlike')).order_by('-like_num')[0]
-
-        if not best_question_select:
-            return JSONEncoder({'message' : '해당되는 조건이 없습니다'}, status=200)
+        # 해당 월의 질문들 중 좋아요 표시된 것이 하나도 없을 경우 : error는 아닌걸로 간주
+        if best_question_select.like_num == 0:
+            return JsonResponse({'message' : '해당되는 조건이 없습니다'}, status=200)
 
         best_question = {
             'writter' : best_question_select.writter.name,
@@ -302,5 +302,5 @@ class BestQuestionView(View):
             'content' : best_question_select.content,
             'created_at' : best_question_select.created_at.strftime('%Y-%m-%d')
         }
-        print("???????????", best_question)
+
         return JsonResponse({'message' : 'SUCCESS', 'best_question' : best_question}, status=200)

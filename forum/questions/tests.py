@@ -1,13 +1,14 @@
 import json, jwt
-from datetime import datetime
 
-from django.test import TestCase, Client
-from datetime       import datetime
+from django.test    import TestCase, Client
+from freezegun      import freeze_time
+
 from users.models   import User, UserType
-from .models import Question, Comment, QuestionLike, QuestionType
+from .models        import Question, Comment, QuestionLike, QuestionType
 from my_settings    import SECRET_KEY, ALGORITHM
 
 client = Client()
+
 class QuestionTest(TestCase):
     maxDiff = None
     def setUp(self):
@@ -50,14 +51,16 @@ class QuestionTest(TestCase):
                 writter = user1,
                 title = 'test_q1_date',
                 content = 'test_q1_content',
-                created_at = '2021-04-03'
+                created_at = '2021-03-03',
+                updated_at = '2021-03-03'
         )
         self.question2 = Question.objects.create(
                 id = 2,
                 writter = user2,
                 title = 'test_q2_weather',
                 content = 'test_q2_content',
-                created_at = '2021-04-03'
+                created_at = '2021-04-03',
+                updated_at = '2021-04-03'
         )
         self.question3 = Question.objects.create(
                 id = 3,
@@ -65,7 +68,8 @@ class QuestionTest(TestCase):
                 title = 'test_q3_place',
                 content = 'test_q3_content',
                 question_type = q_type2,
-                created_at = '2021-04-03'
+                created_at = '2021-04-03',
+                updated_at = '2021-04-03'
         )
 
     def tearDown(self):
@@ -528,6 +532,7 @@ class QuestionLikeTest(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {'message': '존재하지 않는 질문입니다'})
 
+
 class BestQuestionView(TestCase):
     @classmethod
     def setUp(self):
@@ -564,53 +569,56 @@ class BestQuestionView(TestCase):
             id=2,
             name="계정"
         )
-        self.question1 = Question.objects.create(
+        self.freezer = freeze_time("2021-03-20 00:00:00")
+        self.freezer.start()
+        question1 = Question.objects.create(
                 id = 1,
                 writter = user1,
                 title = 'test_q1_date',
-                content = 'test_q1_content',
-                created_at = '2021-03-03 11:11:11'
+                content = 'test_q1_content'
         )
+        self.freezer.stop()
+        self.freezer = freeze_time("2021-04-20 00:00:00")
+        self.freezer.start()
         question2 = Question.objects.create(
                 id = 2,
                 writter = user2,
                 title = 'test_q2_weather',
-                content = 'test_q2_content',
-                created_at = '2021-04-03 11:11:11'
+                content = 'test_q2_content'
         )
         question3 = Question.objects.create(
                 id = 3,
                 writter = user2,
                 title = 'test_q3_place',
                 content = 'test_q3_content',
-                question_type = q_type2,
-                created_at = '2021-04-03 11:11:11'
+                question_type = q_type2
         )
-        QuestionLike.objects.create(
-            user_id = 1,
-            question_id = 1
-        )
-        QuestionLike.objects.create(
-            user_id = 2,
-            question_id = 1
-        )
-        QuestionLike.objects.create(
-            user_id = 3,
-            question_id = 1
-        )
+        self.freezer.stop()
+
+        # QuestionLike.objects.create(
+        #     user_id = 1,
+        #     question_id = 1
+        # )
+        # QuestionLike.objects.create(
+        #     user_id = 2,
+        #     question_id = 1
+        # )
+        # QuestionLike.objects.create(
+        #     user_id = 3,
+        #     question_id = 1
+        # )
         QuestionLike.objects.create(
             user_id = 1,
             question_id = 2
         )
         QuestionLike.objects.create(
             user_id = 2,
-            question_id = 2
+            question_id = 3
         )
         QuestionLike.objects.create(
             user_id = 1,
             question_id = 3
         )
-
     def tearDown(self):
         User.objects.all().delete()
         UserType.objects.all().delete()
@@ -620,7 +628,20 @@ class BestQuestionView(TestCase):
 
     def test_bestquestion_get_success(self):
         self.maxDiff = None
-        response = client.get('/questions/best/2', ontent_type='application/json')
+        response = client.get('/questions/best/2', content_type='application/json')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {'message': 'SUCCESS', 'best_question' : '?'})
+        self.assertEqual(response.json(), {'message': 'SUCCESS', 'best_question' : {
+                                                                        'writter': 'tester2',
+                                                                        'question_type': '계정', 
+                                                                        'title': 'test_q3_place',
+                                                                        'content': 'test_q3_content',
+                                                                        'created_at': '2021-04-20'
+                                                                        }
+                                            })
+
+    def test_bestquestion_get_success_nodata(self):
+        response = client.get('/questions/best/1', content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'message' : '해당되는 조건이 없습니다'})
