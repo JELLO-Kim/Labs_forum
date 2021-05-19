@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from my_settings import SECRET_KEY, DATABASES
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -78,10 +77,10 @@ WSGI_APPLICATION = 'forum.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'labs_forum_db',
+        'NAME': 'forum',
         'USER' : 'root',
         'PASSWORD' : 'password',
-        'HOST' : '127.0.0.1',
+        'HOST' : 'db',
         'PORT' : '3306'
     }
 }
