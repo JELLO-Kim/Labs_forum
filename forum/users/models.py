@@ -5,10 +5,10 @@ class User(models.Model):
     password    = models.CharField(max_length=300)
     name        = models.CharField(max_length=30, unique=True, null=True)
     user_type   = models.ForeignKey('UserType', on_delete=models.CASCADE)
-    last_login  = models.DateTimeField(null=True)
+    last_login  = models.DateTimeField(null=True, blank=True)
     created_at  = models.DateTimeField(auto_now_add=True)
     updated_at  = models.DateTimeField(auto_now=True)
-    deleted_at  = models.DateTimeField(null=True)
+    deleted_at  = models.DateTimeField(null=True, blank=True)
     is_delete   = models.BooleanField(default=0)
 
     class Meta:
