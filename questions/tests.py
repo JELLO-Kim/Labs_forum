@@ -80,6 +80,9 @@ class QuestionTest(TestCase):
         QuestionType.objects.all().delete()
 
     def test_question_post_success(self):
+        """
+        질문 등록 성공
+        """
         data = {
             'writter' : 1,
             'title' : 'new_question',
@@ -94,6 +97,9 @@ class QuestionTest(TestCase):
         self.assertEqual(response.json(), {'message': '새 질문이 등록되었습니다', 'result' : data['title']})
 
     def test_question_post_fail_noinput_title(self):
+        """
+        Error : 필수 parameter 미입력 (제목)
+        """
         data = {
             'writter' : 1,
             'content' : 'test'
@@ -106,6 +112,9 @@ class QuestionTest(TestCase):
         self.assertEqual(response.json(), {'message': '질문 제목을 입력해주세요'})
     
     def test_question_post_fail_noinput_content(self):
+        """
+        Error : 필수 parameter 미입력 (내용)
+        """
         data = {
             'writter_id' : 1,
             'title' : 'new_question'
@@ -118,6 +127,9 @@ class QuestionTest(TestCase):
         self.assertEqual(response.json(), {'message': '질문 내용을 채워주세요'})
 
     def test_question_get_success(self):
+        """
+        성공 : 질문 목록 반환
+        """
         response = client.get('/questions', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'message': 'SUCCESS', 'question_list' : [{
@@ -145,6 +157,9 @@ class QuestionTest(TestCase):
                                                 })
 
     def test_question_get_success_questiontypes_filtering(self):
+        """
+        성공 : 질문 유형으로 filtering (질문유형 : 기타)
+        """
         response = client.get('/questions?type=1', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'message': 'SUCCESS', 'questions' : [{
@@ -157,6 +172,9 @@ class QuestionTest(TestCase):
                                             })
 
     def test_question_get_success_questiontypes_filtering(self):
+        """
+        성공 : 질문 유형으로 filtering (질문유형 : 계정)
+        """
         response = client.get('/questions?type=2', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'message': 'SUCCESS', 'question_list' : [{
@@ -169,6 +187,9 @@ class QuestionTest(TestCase):
                                                                             }]
                                                 })
     def test_question_get_success_keyword_search(self):
+        """
+        성공 : 질문과 본문에 있는 Keyword로 검색
+        """
         response = client.get('/questions?keyword=date', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'message': 'SUCCESS', 'question_list' : [{
@@ -181,6 +202,9 @@ class QuestionTest(TestCase):
                                                                         }]
                                             })
     def test_question_delete_success(self):
+        """
+        성공 : 질문 삭제 (DB에서의 삭제)
+        """
         data = {
             'question_id' : [2, 3]
         }
@@ -192,6 +216,10 @@ class QuestionTest(TestCase):
         self.assertEqual(response.status_code, 204)
 
     def test_question_delete_fail_invalid_user(self):
+        """
+        Error : 작성자가 아닌 유저의 접근
+        """
+
         data = {
             'question_id' : [1]
         }
@@ -206,9 +234,7 @@ class QuestionTest(TestCase):
 
 
 class QuestionDetailTest(TestCase):
-    
     def setUp(self):
-        
         u_type1 = UserType.objects.create(
             id = 1,
             name = "user"
@@ -280,6 +306,9 @@ class QuestionDetailTest(TestCase):
         QuestionType.objects.all().delete()
 
     def test_question_patch_success(self):
+        """
+        성공 : 질문 내역 수정 (일부 항목 수정 가능)
+        """
         data = {
             'title' : 'test_q1_volunteer'
         }
@@ -292,6 +321,9 @@ class QuestionDetailTest(TestCase):
         self.assertEqual(response.json(), {'message': '수정이 완료되었습니다'})
 
     def test_question_patch_fail_invalid_user(self):
+        """
+        Error : 작성자가 아닌 유저의 접근
+        """
         data = {
             'title' : 'test_q1_volunteer'
         }
@@ -304,11 +336,17 @@ class QuestionDetailTest(TestCase):
         self.assertEqual(response.json(), {'message': '권한이 없습니다'})
 
     def test_question_soft_delete_success(self):
+        """
+        성공 : 질문 내역 삭제 (soft_delete : is_delete의 값을 1로 변환 / DB에는 그대로 존재 / "숨김" 처리를 고려한 기능)
+        """
         response = client.delete('/questions/1', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'message' : '삭제처리 되었습니다'})
 
     def test_question_soft_delete_fail_already_deleted(self):
+        """
+        Error : 이미 soft_delete처리 되어있는 경우
+        """
         response = client.delete('/questions/4', content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : '이미 삭제된 질문입니다'})
@@ -316,7 +354,6 @@ class QuestionDetailTest(TestCase):
 
 class CommentTest(TestCase):
     def setUp(self):
-        
         u_type1 = UserType.objects.create(
             id = 1,
             name = "user"
@@ -404,6 +441,9 @@ class CommentTest(TestCase):
 
 
     def test_comment_get_success(self):
+        """
+        성공 : 해당 질문의 답변 목록 반환
+        """
         self.maxDiff = None
         response = client.get('/questions/1/comments', content_type='application/json')
 
@@ -490,7 +530,7 @@ class QuestionLikeTest(TestCase):
 
     def test_new_questionlikes_post_success(self):
         """
-        새로 질문에 대한 "좋아요" 등록
+        성공 : 새로 질문에 대한 "좋아요" 등록
         """
         data = {
             "question_id" : 1
@@ -505,7 +545,7 @@ class QuestionLikeTest(TestCase):
 
     def test_delete_questionlikes_post_success(self):
         """
-        질문에 대한 "좋아요" 취소
+        성공 : 질문에 대한 "좋아요" 취소
         """
         data = {
             "question_id" : 1
@@ -519,7 +559,7 @@ class QuestionLikeTest(TestCase):
 
     def test_questionlikes_post_fail_doesnotexists(self):
         """
-        유효하지 않은 질문에 대한 "좋아요" 기능 시
+        Error : 유효하지 않은 질문에 대한 "좋아요" 기능 시
         """
         data = {
             "question_id" : 100
@@ -534,7 +574,6 @@ class QuestionLikeTest(TestCase):
 
 
 class BestQuestionView(TestCase):
-    @classmethod
     def setUp(self):
         u_type1 = UserType.objects.create(
             id = 1,
@@ -595,18 +634,6 @@ class BestQuestionView(TestCase):
         )
         self.freezer.stop()
 
-        # QuestionLike.objects.create(
-        #     user_id = 1,
-        #     question_id = 1
-        # )
-        # QuestionLike.objects.create(
-        #     user_id = 2,
-        #     question_id = 1
-        # )
-        # QuestionLike.objects.create(
-        #     user_id = 3,
-        #     question_id = 1
-        # )
         QuestionLike.objects.create(
             user_id = 1,
             question_id = 2
@@ -627,6 +654,9 @@ class BestQuestionView(TestCase):
         QuestionLike.objects.all().delete()
 
     def test_bestquestion_get_success(self):
+        """
+        성공 : 기준 월의 가장 좋아요 많은 질문 반환
+        """
         self.maxDiff = None
         response = client.get('/questions/best/2', content_type='application/json')
 
@@ -641,6 +671,9 @@ class BestQuestionView(TestCase):
                                             })
 
     def test_bestquestion_get_success_nodata(self):
+        """
+        성공 : 기준 월의 질문목록들 중 좋아요 받은것이 하나도 없을 경우
+        """
         response = client.get('/questions/best/1', content_type='application/json')
 
         self.assertEqual(response.status_code, 200)
