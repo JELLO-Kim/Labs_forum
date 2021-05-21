@@ -106,6 +106,7 @@ $ http GET localhost:8000/questions type==1
 <br>
 
 ## 4. Create new question
+- URL:
 ```bash
 /questions
 ```
@@ -134,6 +135,7 @@ $ http POST localhost:8000/questions/1
 <br>
 
 ## 5. Delete one question (hard_delete)
+- URL:
 ```bash
 /questions
 ```
@@ -167,6 +169,7 @@ $ http DELETE localhost:8000/questions
 <br>
 
 ## 6. Edit one question
+- URL:
 ```bash
 /questions/<int:question_id>
 ```
@@ -209,6 +212,7 @@ $ http PATCH localhost:8000/questions
 <br>
 
 ## 7. Delete one question (soft_delete)
+- URL:
 ```bash
 /questions/<int:question_id>
 ```
@@ -246,6 +250,7 @@ $ http DELETE localhost:8000/questions/1
 <br>
 
 ## 8. Show all comments of one question
+- URL:
 ```bash
 /questions/<int:question_id>/comments
 ```
@@ -279,6 +284,7 @@ $ http GET localhost:8000/questions/1/comments
 <br>
 
 ## 9. Create new comments on one question
+- URL:
 ```bash
 /questions/<int:question_id>/comments
 ```
@@ -301,17 +307,94 @@ is_parent = <Int>
 
 - Sample call:
 ```bash
-$ http GET localhost:8000/questions/1/comments
+$ http POST localhost:8000/questions/1/comments
 ```
 
 - Success response:
-  - Code : `200 (Ok)`
-  - Content : `{'message' : 'SUCCESS', 'comment_list' : #질문의 답변리스트}`
+  - Code : `201 (Created)`
+  - Content : `{'message' : '댓글이 등록되었습니다'}`
 
 - Error response:
-  - Situation : Invalid question_id 
-  - Code : `404 (Not found)`
-  - Content : `{'message' : '존재하지 않는 질문입니다'}`
   - Situation : Already soft_deleted question
   - Code : `400 (Bad request)`
   - Content : `{'message' : '삭제된 게시물입니다'}`
+  - Situation : Key Error
+  - Code : `400 (Bad request)`
+  - Content : `{'message' : '내용을 입력해 주세요'}`
+
+<br>
+
+## 10. Question Like (Create & Delete)
+- URL:
+```bash
+/questions/like
+```
+- Method:
+```bash
+POST
+```
+
+- Body requires:
+```bash
+question_id = <Int:question_id>
+```
++) `is_parent` is optional
+
+- Sample call:
+```bash
+$ http POST localhost:8000/questions/like question_id=1
+```
+
+- Success response:
+  - Situation : Create Like
+  - Code : `201 (Created)`
+  - Content : `{'message' : '좋아요가 등록되었습니다'}`
+  - Situation : Cancle Like
+  - Code : `200 (Ok)`
+  - Content : `{'message' : '좋아요가 취소되었습니다'}`
+
+- Error response:
+  - Situation : Already soft_deleted question
+  - Code : `400 (Bad request)`
+  - Content : `{'message' : '삭제된 게시물입니다'}`
+  - Situation : Invalid question_id
+  - Code : `400 (Bad request)`
+  - Content : `{'message' : '존재하지 않는 질문입니다'}`
+
+<br>
+
+## 10. Question Like (Create & Delete)
+- URL:
+```bash
+/questions/best/<int:question_id
+```
+- Method:
+```bash
+GET
+```
+
+- URL quary parameter requires:
+```bash
+question_id = <Int:question_id>
+```
+
+- Sample call:
+```bash
+$ http POST localhost:8000/questions/bestlike
+```
+
+- Success response:
+  - Situation : SUCCESS
+  - Code : `200 (Ok)`
+  - Content : `{'message' : 'SUCCESS', 'best_question' : #베스트질문내용}`
+  - Situation : No data Exsits (not wrong)
+  - Code : `200 (Ok)`
+  - Content : `{'message' : '해당하는 조건이 없습니다'}`
+
+- Error response:
+  - Situation : Already soft_deleted question
+  - Code : `400 (Bad request)`
+  - Content : `{'message' : '삭제된 게시물입니다'}`
+  - Situation : Invalid question_id
+  - Code : `400 (Bad request)`
+  - Content : `{'message' : '존재하지 않는 질문입니다'}`
