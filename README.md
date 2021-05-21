@@ -70,7 +70,7 @@ $ docker-compose up
 ## 1. SignUp
 - URL:
 ```bash
-/users/signup
+/user/signup
 ```
 - Method:
 ```bash
@@ -84,12 +84,15 @@ email, password, name
 
 - Sample call:
 ```bash
-$ http POST localhost:8000/users/signup email="user@gmail.com" name="user" password="pw12341234"
+$ http POST localhost:8000/user/signup email="user1@gmail.com" name="user1" password="pw12341234"
 ```
 
 - Success response:
   - Code : `201 (Created)`
-  - Content : `{'message' : '회원가입 성공', 'result' : #새로가입한 유저의 이메일}`
+  - Content : `{
+    "message": "회원가입 성공",
+    "result": "user1@gmail.com"
+}`
 - Error response:
   - Code : `400 (Bad request)`
   - Content : `{'message' : '이메일을 입력해 주세요'}`/`{'message' : '비밀번호를 입력해 주세요'}` <br>
@@ -101,7 +104,7 @@ $ http POST localhost:8000/users/signup email="user@gmail.com" name="user" passw
 ## 2. SignIn
 - URL:
 ```bash
-/users/signin
+/user/signin
 ```
 - Method:
 ```bash
@@ -115,12 +118,15 @@ email, password
 
 - Sample call:
 ```bash
-$ http POST localhost:8000/users/signin email="user@gmail.com" password="pw12341234"
+$ http POST localhost:8000/user/signin email="cogus950403@gmail.com" password="pw12341234"
 ```
 
 - Success response:
   - Code : `200 (Ok)`
-  - Content : `{'message' : '로그인 성공', 'access_token' : #로그인 유저의 토큰}`
+  - Content : `{
+    "message": "로그인 성공",
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.MN9OkseOwzcb7lFyO2fa70_kTWN6C3aqNYCvZOHNEvQ"
+}`
 - Error response:
   - Code : `400 (Bad request)`
   - Content : `{'message' : '이메일을 입력해 주세요'}`/`{'message' : '비밀번호를 입력해 주세요'}` <br>
@@ -152,7 +158,65 @@ $ http GET localhost:8000/questions type==1
 
 - Success response:
   - Code : `200 (Ok)`
-  - Content : `{'message' : 'SUCCESS', 'question_list' : #해당 조건의 모든 질문 목록들}`
+  - Content : `{
+    "message": "SUCCESS",
+    "question_list": [
+        {
+            "title": "1번질문",
+            "content": "1번질문내용",
+            "created_at": "2021-04-03 00:00:00",
+            "question_type": "기타",
+            "writter": "cogus",
+            "like_num": 0
+        },
+        {
+            "title": "2번질문",
+            "content": "2번질문내용",
+            "created_at": "2021-05-21 20:01:10",
+            "question_type": "계정",
+            "writter": "cogus",
+            "like_num": 2
+        },
+        {
+            "title": "3번질문_date",
+            "content": "3번질문내용",
+            "created_at": "2021-05-21 20:03:38",
+            "question_type": "기타",
+            "writter": "cogus",
+            "like_num": 3
+        }
+    ]
+}`
+ - Situation : Search by keyword (date)
+ - Code : `200 (Ok)`
+ - Content : `{
+    "message": "SUCCESS",
+    "question_list": [
+        {
+            "title": "3번질문_date",
+            "content": "3번질문내용",
+            "created_at": "2021-05-21 20:03:38",
+            "question_type": "기타",
+            "writter": "cogus",
+            "like_num": 3
+        }
+    ]
+}`
+ - Situation : Filtering by category (question_type_id=1)
+ - Code : `200 (Ok)`
+ - Content : `{
+    "message": "SUCCESS",
+    "question_list": [
+        {
+            "title": "2번질문",
+            "content": "2번질문내용",
+            "created_at": "2021-05-21 20:01:10",
+            "question_type": "계정",
+            "writter": "cogus",
+            "like_num": 2
+        }
+    ]
+}`
 - Error response:
   - Situation : Invalid question type id
   - Code : `400 (Bad request)`
@@ -173,15 +237,25 @@ POST
 ```bash
 title, content, question_type
 ```
+ +) question_type is optional, if no input, it will be setted "기타" category (id=1)
 
 - Sample call:
 ```bash
-$ http POST localhost:8000/questions/1
+$ http POST localhost:8000/questions/1 title="2번질문", content="2번질문내용
+$ http POST localhost:8000/questions/1 title="3번질문_date", content="3번질문내용", question_type=2
 ```
 
 - Success response:
   - Code : `201 (Created)`
-  - Content : `{'message' : '새 질문이 등록되었습니다', 'result' : #새로 작성된 질문의 제목}`
+  - Content : `{
+    "message": "새 질문이 등록되었습니다",
+    "result": "2번질문"
+}`
+  - Code : `201 (Created)`
+  - Content : `{
+    "message": "새 질문이 등록되었습니다",
+    "result": "3번질문_date"
+}}`
 - Error response:
   - Situation : Key Error
   - Code : `400 (Bad request)`
@@ -206,12 +280,14 @@ question_id==[#삭제할 질문의 id가 담긴 list]
 
 - Sample call:
 ```bash
-$ http DELETE localhost:8000/questions
+$ http DELETE localhost:8000/questions question_id=[4]
 ```
 
 - Success response:
   - Code : `204 (Deleted)`
-  - Content : `{'message' : 'DELETE'}`
+  - Content : `{
+    "message": "DELETE"
+}`
 
 - Error response:
   - Situation : Invalid question_id 
@@ -244,12 +320,14 @@ title, content, question_type
 
 - Sample call:
 ```bash
-$ http PATCH localhost:8000/questions
+$ http PATCH localhost:8000/questions question_type_id=2
 ```
 
 - Success response:
   - Code : `200 (Ok)`
-  - Content : `{'message' : '수정이 완료되었습니다'}`
+  - Content : `{
+    "message": "수정이 완료되었습니다"
+}`
 
 - Error response:
   - Situation : non login_user
@@ -292,7 +370,9 @@ $ http DELETE localhost:8000/questions/1
 
 - Success response:
   - Code : `200 (Ok)`
-  - Content : `{'message' : '삭제처리 되었습니다'}`
+  - Content : `{
+    "message": "삭제처리 되었습니다"
+}`
 
 - Error response:
   - Situation : Invalid question_id 
@@ -326,7 +406,32 @@ $ http GET localhost:8000/questions/1/comments
 
 - Success response:
   - Code : `200 (Ok)`
-  - Content : `{'message' : 'SUCCESS', 'comment_list' : #질문의 답변리스트}`
+  - Content : `{
+    "message": "SUCCESS",
+    "comment_list": [
+        {
+            "writter": "user1",
+            "quetion_id": 1,
+            "comment": "질문1에 대한 답변1입니다",
+            "is_parent": null,
+            "created_at": "2021-05-21 20:21:09"
+        },
+        {
+            "writter": "purple",
+            "quetion_id": 1,
+            "comment": "질문1에 대한 답변2입니다",
+            "is_parent": null,
+            "created_at": "2021-05-21 20:21:39"
+        },
+        {
+            "writter": "cogus",
+            "quetion_id": 1,
+            "comment": "질문1의 답변1에 대한 대댓글입니다",
+            "is_parent": 1,
+            "created_at": "2021-05-21 20:22:43"
+        }
+    ]
+}`
 
 - Error response:
   - Situation : Invalid question_id 
@@ -341,7 +446,7 @@ $ http GET localhost:8000/questions/1/comments
 ## 9. Create new comments on one question
 - URL:
 ```bash
-/questions/<int:question_id>/comments
+/questions/<int:question_id>/comments"
 ```
 - Method:
 ```bash
@@ -362,12 +467,14 @@ is_parent = <Int>
 
 - Sample call:
 ```bash
-$ http POST localhost:8000/questions/1/comments
+$ http POST localhost:8000/questions/1/comments comment="질문1에 대한 답변2입니다"
 ```
 
 - Success response:
   - Code : `201 (Created)`
-  - Content : `{'message' : '댓글이 등록되었습니다'}`
+  - Content : `{
+    "message": "댓글이 등록되었습니다"
+}`
 
 - Error response:
   - Situation : Already soft_deleted question
@@ -403,10 +510,14 @@ $ http POST localhost:8000/questions/like question_id=1
 - Success response:
   - Situation : Create Like
   - Code : `201 (Created)`
-  - Content : `{'message' : '좋아요가 등록되었습니다'}`
+  - Content : `{
+    "message": "좋아요가 등록되었습니다"
+}`
   - Situation : Cancle Like
   - Code : `200 (Ok)`
-  - Content : `{'message' : '좋아요가 취소되었습니다'}`
+  - Content : `{
+    "message": "좋아요가 쥐소되었습니다"
+}`
 
 - Error response:
   - Situation : Already soft_deleted question
@@ -418,10 +529,10 @@ $ http POST localhost:8000/questions/like question_id=1
 
 <br>
 
-## 10. Question Like (Create & Delete)
+## 10. Best Question
 - URL:
 ```bash
-/questions/best/<int:question_id
+/questions/best/<int:question_id>
 ```
 - Method:
 ```bash
@@ -435,13 +546,22 @@ question_id = <Int:question_id>
 
 - Sample call:
 ```bash
-$ http POST localhost:8000/questions/bestlike
+$ http POST localhost:8000/questions/best/2
 ```
 
 - Success response:
   - Situation : SUCCESS
   - Code : `200 (Ok)`
-  - Content : `{'message' : 'SUCCESS', 'best_question' : #베스트질문내용}`
+  - Content : `{
+    "message": "SUCCESS",
+    "best_question": {
+        "writter": "cogus",
+        "question_type": "기타",
+        "title": "3번질문_date",
+        "content": "3번질문내용",
+        "created_at": "2021-05-21"
+    }
+}`
   - Situation : No data Exsits (not wrong)
   - Code : `200 (Ok)`
   - Content : `{'message' : '해당하는 조건이 없습니다'}`
