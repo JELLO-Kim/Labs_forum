@@ -209,7 +209,7 @@ CREATE TABLE `comments` (
   CONSTRAINT `comments_is_parent_id_0ee2b9c1_fk_comments_id` FOREIGN KEY (`is_parent_id`) REFERENCES `comments` (`id`),
   CONSTRAINT `comments_question_id_2a815228_fk_questions_id` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`),
   CONSTRAINT `comments_writter_id_f5048d95_fk_users_id` FOREIGN KEY (`writter_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,6 +218,7 @@ CREATE TABLE `comments` (
 
 LOCK TABLES `comments` WRITE;
 /*!40000 ALTER TABLE `comments` DISABLE KEYS */;
+INSERT INTO `comments` VALUES (1,'질문1에 대한 답변1입니다','2021-05-21 20:21:09.924787','2021-05-21 20:21:09.924809',NULL,0,NULL,1,3),(2,'질문1에 대한 답변2입니다','2021-05-21 20:21:39.799909','2021-05-21 20:21:39.799928',NULL,0,NULL,1,2),(5,'질문1의 답변1에 대한 대댓글입니다','2021-05-21 20:22:43.687269','2021-05-21 20:22:43.688441',NULL,0,1,1,1);
 /*!40000 ALTER TABLE `comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -350,7 +351,7 @@ CREATE TABLE `question_likes` (
   KEY `question_likes_user_id_34db90b7_fk_users_id` (`user_id`),
   CONSTRAINT `question_likes_question_id_89c1f770_fk_questions_id` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`),
   CONSTRAINT `question_likes_user_id_34db90b7_fk_users_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -359,7 +360,7 @@ CREATE TABLE `question_likes` (
 
 LOCK TABLES `question_likes` WRITE;
 /*!40000 ALTER TABLE `question_likes` DISABLE KEYS */;
-INSERT INTO `question_likes` VALUES (1,1,1);
+INSERT INTO `question_likes` VALUES (3,2,1),(4,3,1),(6,2,2),(7,3,2),(9,3,3);
 /*!40000 ALTER TABLE `question_likes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -409,7 +410,7 @@ CREATE TABLE `questions` (
   KEY `questions_question_type_id_2ac86b25_fk_question_types_id` (`question_type_id`),
   CONSTRAINT `questions_question_type_id_2ac86b25_fk_question_types_id` FOREIGN KEY (`question_type_id`) REFERENCES `question_types` (`id`),
   CONSTRAINT `questions_writter_id_43350900_fk_users_id` FOREIGN KEY (`writter_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -418,7 +419,7 @@ CREATE TABLE `questions` (
 
 LOCK TABLES `questions` WRITE;
 /*!40000 ALTER TABLE `questions` DISABLE KEYS */;
-INSERT INTO `questions` VALUES (1,'1번질문','1번질문내용','2021-04-03 00:00:00.000000','2021-04-03 00:00:00.000000',NULL,0,1,1);
+INSERT INTO `questions` VALUES (1,'1번질문','1번질문내용','2021-04-03 00:00:00.000000','2021-04-03 00:00:00.000000',NULL,0,1,1),(2,'2번질문','2번질문내용','2021-05-21 20:01:10.721075','2021-05-21 20:17:21.920254',NULL,0,1,2),(3,'3번질문_date','3번질문내용','2021-05-21 20:03:38.475107','2021-05-21 20:03:38.475124',NULL,0,1,1),(5,'임시질문1','임시질문내용1','2021-05-21 20:06:52.706945','2021-05-21 20:11:49.049490',NULL,1,1,1);
 /*!40000 ALTER TABLE `questions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -469,7 +470,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `name` (`name`),
   KEY `users_user_type_id_c594293d_fk_user_types_id` (`user_type_id`),
   CONSTRAINT `users_user_type_id_c594293d_fk_user_types_id` FOREIGN KEY (`user_type_id`) REFERENCES `user_types` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -478,7 +479,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'cogus950403@gmail.com','pw12341234','cogus',NULL,'2021-05-18 11:17:07.117732','2021-05-18 14:18:53.650597',NULL,0,1),(2,'purple@gmail.com','pw12341234','purple','2021-05-19 16:44:38.000000','2021-05-19 16:44:39.877070','2021-05-19 16:44:39.877082',NULL,0,1);
+INSERT INTO `users` VALUES (1,'cogus950403@gmail.com','pw12341234','cogus','2021-05-21 20:27:53.466211','2021-05-18 11:17:07.117732','2021-05-21 20:27:53.466308',NULL,0,1),(2,'purple@gmail.com','pw12341234','purple','2021-05-21 20:34:49.189297','2021-05-19 16:44:39.877070','2021-05-21 20:34:49.189369',NULL,0,1),(3,'user1@gmail.com','pw12341234','user1','2021-05-21 20:36:03.786167','2021-05-21 19:59:25.257746','2021-05-21 20:36:03.786238',NULL,0,1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -491,4 +492,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-19 19:59:29
+-- Dump completed on 2021-05-21 21:02:50

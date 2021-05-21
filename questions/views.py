@@ -8,27 +8,6 @@ from users.models       import User
 from questions.models   import Question, Comment, QuestionLike, QuestionType
 from utils              import login_decorator
 
-def check_question_validation(question_id):
-    """
-    Author:
-        - Chae hyun Kim
-    Args:
-        - question_id
-    Return;
-        - 200: validation통과 시 True 반환
-        - 400: 존재하지 않는 질문입니다
-        - 400: 삭제된 질문입니다
-    Note:
-        - 자주 사용되는 질문 유효성 validation의 함수화 처리
-    """
-    if not Question.objects.filter(id=question_id).exists():
-        print("여긴오면안돼")
-        return JsonResponse({'message' : '존재하지 않는 질문입니다'}, status=404)
-        system.exit()
-    elif Question.objects.get(id=question_id).is_delete == 1:
-        print("여기로 와야지")
-        return JsonResponse({'message' : '삭제된 질문입니다'}, status=400)
-
 class QuestionView(View):
     def get(self, request):
         """
@@ -144,13 +123,15 @@ class QuestionDetailView(View):
         data = json.loads(request.body)
         title = data.get('title', None)
         content = data.get('content', None)
-        question_type = data.get('question_type', None)
+        question_type = data.get('question_type_id', None)
 
         question = Question.objects.get(id=question_id)
 
         # 유효하지 않은 질문번호 Validation
         if Question.objects.get(id=question_id).is_delete == 1:
             return JsonResponse({'message' : '이미 삭제된 질문입니다.'})
+        if not Question.objects.filter(id=question_id).exists():
+            return JsonResponse({'message' : '존재하지 않는 질문입니다'}, status=404)
 
         # 유효한 유저 Validation
         if Question.objects.get(id=question_id).writter != user:
@@ -165,7 +146,7 @@ class QuestionDetailView(View):
         question.save()
 
         return JsonResponse({'message' : '수정이 완료되었습니다'}, status=200)
-
+    @login_decorator
     def delete(self, request, question_id):
         """
         Author:
@@ -177,10 +158,15 @@ class QuestionDetailView(View):
         Note:
             - delete method이지만 마치 "숨김" 기능처럼 soft_delete방식으로 질문을 처리한다 (is_delete의 값을 0에서 1로 변환)
         """
-
+        user = request.user
         # 유효하지 않은 질문번호 Validation
         if Question.objects.get(id=question_id).is_delete:
             return JsonResponse({'message' : '이미 삭제된 질문입니다'}, status=400)
+        if not Question.objects.filter(id=question_id).exists():
+            return JsonResponse({'message' : '존재하지 않는 질문입니다'}, status=404)
+
+        if Question.objects.get(id=question_id).writter != user:
+            return JsonResponse({'message' : '권한이 없습니다'}, status=403)
 
         question = Question.objects.get(id=question_id)
         question.is_delete = 1
@@ -189,6 +175,7 @@ class QuestionDetailView(View):
         return JsonResponse({'message' : '삭제처리 되었습니다'}, status=200)
 
 class CommentView(View):
+    @login_decorator
     def post(self, request, question_id):
         """
         Author:
@@ -217,10 +204,10 @@ class CommentView(View):
         new_comment = Comment.objects.create(
                         writter = user,
                         question_id = question_id,
-                        comment = comment,
+                        comment = comment
                     )
         if is_parent:
-            new_comment.is_parent = is_parent
+            new_comment.is_parent_id = is_parent
             new_comment.save()
         
         return JsonResponse({'message' : '댓글이 등록되었습니다'}, status=201)

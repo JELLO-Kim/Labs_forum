@@ -339,7 +339,10 @@ class QuestionDetailTest(TestCase):
         """
         성공 : 질문 내역 삭제 (soft_delete : is_delete의 값을 1로 변환 / DB에는 그대로 존재 / "숨김" 처리를 고려한 기능)
         """
-        response = client.delete('/questions/1', content_type='application/json')
+        user = User.objects.get(name="tester1")
+        token = jwt.encode({'id':user.id}, SECRET_KEY, algorithm=ALGORITHM)
+        headers  = {'HTTP_AUTHORIZATION' : token}
+        response = client.delete('/questions/1', content_type='application/json', **headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'message' : '삭제처리 되었습니다'})
 
@@ -347,7 +350,10 @@ class QuestionDetailTest(TestCase):
         """
         Error : 이미 soft_delete처리 되어있는 경우
         """
-        response = client.delete('/questions/4', content_type='application/json')
+        user = User.objects.get(name="tester2")
+        token = jwt.encode({'id':user.id}, SECRET_KEY, algorithm=ALGORITHM)
+        headers  = {'HTTP_AUTHORIZATION' : token}
+        response = client.delete('/questions/4', content_type='application/json', **headers)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : '이미 삭제된 질문입니다'})
 

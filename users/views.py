@@ -1,4 +1,4 @@
-import json, jwt, re
+import json, jwt, re, datetime
 
 from django.views   import View
 from django.http    import JsonResponse
@@ -87,6 +87,8 @@ class SignInView(View):
                 return JsonResponse({'message' : '비밀번호가 잘못 입력되었습니다'}, status=400)
 
         user = User.objects.get(email=email)
+        user.last_login = datetime.datetime.now()
+        user.save()
         access_token = jwt.encode({'id' : user.id}, SECRET_KEY, algorithm=ALGORITHM)
 
         return JsonResponse({'message' : '로그인 성공', 'access_token' : access_token}, status=200)        
