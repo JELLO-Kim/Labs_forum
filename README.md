@@ -1,5 +1,20 @@
 # Labs_forum
-# About project
+Project for "모두의 연구소"
+<br>
+
+# API abbstract
+- SignUp / SignIn
+- Read Question list
+- Create new question
+- Edit one question
+- Delete one question (soft_delete)
+- Delete soem questions (hard_delete)
+- Read commens of one question
+- Create new comment
+- Create or Delete question_like relationship
+- Read best question of specific month
+
+<br>
 
 # Installation from the git repo
 ```bash
@@ -10,6 +25,46 @@ $ docker-compose up
 
 <br>
 
+# Project Structure
+```bash
+.
+├── Dockerfile
+├── README.md
+├── requirements.txt
+├── utils.py
+├── wait-for-it.sh
+├── data
+│   └── forum.sql
+├── docker-compose.yml
+├── forum
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── manage.py
+├── questions
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+└──users
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── migrations
+    │   └── __init__.py
+    ├── models.py
+    ├── tests.py
+    ├── urls.py
+    └── views.py
+
+```
 # APIs
 
 ## 1. SignUp
