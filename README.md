@@ -25,6 +25,19 @@ $ docker-compose up
 
 <br>
 
+# Setting info
+
+#### my_settings.py
+- SECRET_KEY for JWT and Django's SECRET_KEY
+- Algorithm for JWT
+- DATABASE information
+
+#### requirements.txt
+- need to intallation python modules
+
+
+<br>
+
 # Project Structure
 ```bash
 .
