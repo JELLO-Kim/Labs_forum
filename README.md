@@ -1,5 +1,5 @@
 # Labs_forum
-Project for "모두의 연구소"
+Project for "모두의 연구소" 사전과제 <br>
 개발 기간 : 21.05.17 ~ 21.05.21
 
 <br>
