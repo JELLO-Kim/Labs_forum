@@ -1,5 +1,14 @@
 # Labs_forum
 Project for "모두의 연구소"
+개발 기간 : 21.05.17 ~ 21.05.21
+
+<br>
+
+## 개발 기간 상세
+05.17 ~ 05.18 : 필수 API 구현 완료(TDD 지향) <br>
+05.19 : docker-compose 환경 구축 <br>
+05.20 ~ 05.21 : README 작성, 과제 제출
+
 <br>
 
 # API abbstract
